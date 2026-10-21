@@ -11,6 +11,8 @@ const baseInputs: Inputs = {
   seaCreatureChance: 50,
   doubleHookChance: 20,
   magicFind: 0,
+  lootingEnabled: false,
+  lootingLevel: 5,
   tracking: 0,
   fishingLevel: 50,
   trophyTitle: 4,
@@ -83,6 +85,50 @@ describe('drops and money', () => {
     const koi = leech.drops.find((d) => d.item === 'PITCHIN_KOI')!;
     expect(blade.chance).toBeCloseTo(0.05);
     expect(koi.chance).toBeCloseTo(0.008);
+  });
+
+  it('ignores the Looting level while the checkbox is off', () => {
+    const r = calculate({ ...baseInputs, lootingLevel: 5 }, loc, emptyPrices);
+    const frag = byId(r, 'LORD_JAWBUS').drops.find((d) => d.item === 'MAGMA_LORD_FRAGMENT')!;
+    expect(frag.perKill).toBe(1);
+    expect(frag.lootingApplied).toBe(false);
+  });
+
+  it('boosts every drop by 15% per Looting level, guaranteed ones included', () => {
+    const r = calculate({ ...baseInputs, lootingEnabled: true, lootingLevel: 5 }, loc, emptyPrices);
+    const jawbus = byId(r, 'LORD_JAWBUS');
+    const frag = jawbus.drops.find((d) => d.item === 'MAGMA_LORD_FRAGMENT')!;
+    const silver = jawbus.drops.find((d) => d.item === 'MAGMA_FISH_SILVER')!;
+    expect(frag.chance).toBeCloseTo(1.75);
+    expect(frag.perKill).toBeCloseTo(1.75);
+    expect(silver.perKill).toBeCloseTo(24 * 1.75);
+    const level3 = calculate({ ...baseInputs, lootingEnabled: true, lootingLevel: 3 }, loc, emptyPrices);
+    expect(byId(level3, 'LORD_JAWBUS').drops.find((d) => d.item === 'RADIOACTIVE_VIAL')!.chance).toBeCloseTo(0.005 * 1.45);
+  });
+
+  it('applies Looting before Magic Find and checks the 5% limit on the looted chance', () => {
+    const withBoth = (lootingLevel: number) =>
+      byId(calculate({ ...baseInputs, magicFind: 100, lootingEnabled: true, lootingLevel }, loc, emptyPrices), 'LAVA_FLAME')
+        .drops.find((d) => d.item === 'FLAMING_CHESTPLATE')!;
+    // 2% base: Looting I → 2.3%, still under 5%, so Magic Find doubles it.
+    expect(withBoth(1).chance).toBeCloseTo(0.02 * 1.15 * 2);
+    // Looting V → 3.5%, still under 5%.
+    expect(withBoth(5).chance).toBeCloseTo(0.02 * 1.75 * 2);
+    // Wiki example: a 3% drop becomes 3.45% with Looting I (Magic Find still applies)
+    // but 5.25% with Looting V (Magic Find no longer applies).
+    const mini: LocationData = {
+      id: 'TEST', name: 'Test', liquid: 'water',
+      creatures: [{
+        id: 'X', name: 'X', rarity: 'RARE', weight: 1, requires: { fishingLevel: 0 }, fishingXp: 0,
+        drops: [{ item: 'TORN_CLOTH', min: 1, max: 1, chance: 0.03 }],
+      }],
+    };
+    const cloth = (lootingLevel: number) =>
+      calculate({ ...baseInputs, magicFind: 100, lootingEnabled: true, lootingLevel }, mini, emptyPrices).creatures[0].drops[0];
+    expect(cloth(1).chance).toBeCloseTo(0.0345 * 2);
+    expect(cloth(1).magicFindApplied).toBe(true);
+    expect(cloth(5).chance).toBeCloseTo(0.0525);
+    expect(cloth(5).magicFindApplied).toBe(false);
   });
 
   it('uses the average of min and max for drop counts', () => {

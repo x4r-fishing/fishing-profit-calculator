@@ -14,6 +14,16 @@ export const TROPHY_TITLES = ['None', 'Novice', 'Adept', 'Expert', 'Master'] as 
 /** Magic Find only boosts drops whose base chance is below 5%. */
 export const MAGIC_FIND_THRESHOLD = 0.05;
 
+/** Looting adds 15% per level to drop chance (and to amount, once the chance passes 100%). */
+export const LOOTING_PER_LEVEL = 0.15;
+export const MAX_LOOTING_LEVEL = 5;
+
+export function lootingMultiplier(inputs: Pick<Inputs, 'lootingEnabled' | 'lootingLevel'>): number {
+  if (!inputs.lootingEnabled) return 1;
+  const level = Math.min(Math.max(Math.round(inputs.lootingLevel), 0), MAX_LOOTING_LEVEL);
+  return 1 + LOOTING_PER_LEVEL * level;
+}
+
 export function prettyId(id: string): string {
   return id
     .toLowerCase()
@@ -55,6 +65,7 @@ export function calculate(inputs: Inputs, loc: LocationData, prices: PriceData):
     excluded,
   };
   const mf = Math.max(inputs.magicFind, 0) / 100;
+  const looting = lootingMultiplier(inputs);
 
   const weights = loc.creatures.map((c) =>
     lockReason(c, inputs) ? 0 : effectiveWeight(c, inputs, loc),
@@ -68,8 +79,10 @@ export function calculate(inputs: Inputs, loc: LocationData, prices: PriceData):
     const perHour = scPerHour * share;
 
     const drops: DropResult[] = c.drops.map((d) => {
-      const mfApplies = d.magicFind ?? d.chance < MAGIC_FIND_THRESHOLD;
-      const chance = Math.min(1, mfApplies ? d.chance * (1 + mf) : d.chance);
+      // Looting applies first; Magic Find then checks the looted chance against the 5% threshold.
+      const looted = d.chance * looting;
+      const mfApplies = d.magicFind ?? looted < MAGIC_FIND_THRESHOLD;
+      const chance = mfApplies ? looted * (1 + mf) : looted;
       const avgCount = (d.min + d.max) / 2;
       const perKill = chance * avgCount;
       const price = resolvePrice(d.item, prices, priceOpts);
@@ -79,6 +92,7 @@ export function calculate(inputs: Inputs, loc: LocationData, prices: PriceData):
         item: d.item,
         name: prices.names[d.item] ?? d.name ?? prettyId(d.item),
         chance,
+        lootingApplied: looting > 1,
         magicFindApplied: mfApplies && mf > 0,
         avgCount,
         perKill,

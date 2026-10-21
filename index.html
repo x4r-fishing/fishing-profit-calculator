@@ -27,6 +27,17 @@
           <label>Sea Creature Chance % <input name="seaCreatureChance" type="number" min="0" max="100" step="0.1" /></label>
           <label>Double Hook Chance % <input name="doubleHookChance" type="number" min="0" step="0.1" /></label>
           <label>Magic Find <input name="magicFind" type="number" min="0" step="1" /></label>
+          <div class="looting">
+            <label class="check"><input name="lootingEnabled" type="checkbox" /> Looting</label>
+            <select name="lootingLevel" aria-label="Looting level">
+              <option value="1">I (+15%)</option>
+              <option value="2">II (+30%)</option>
+              <option value="3">III (+45%)</option>
+              <option value="4">IV (+60%)</option>
+              <option value="5">V (+75%)</option>
+            </select>
+            <small>On the weapon you kill sea creatures with. Boosts every drop.</small>
+          </div>
           <label>Tracking <input name="tracking" type="number" min="0" step="1" />
             <small>Boosts Thunder and Lord Jawbus weight</small></label>
         </fieldset>

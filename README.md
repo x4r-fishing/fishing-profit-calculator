@@ -10,7 +10,9 @@ First location: **Crimson Isle lava fishing outside hotspots** (Thunder and Lord
 - **Which creature you get** = its weight ÷ the total weight of all creatures you have unlocked (fishing level and Trophy Fisher title).
   - Whale, Light and Dark bait multiply the weight of creatures under 400 base weight by 1.25.
   - Tracking multiplies the weight of elusive creatures (Thunder, Lord Jawbus) by (1 + Tracking/100).
-- **Drops**: base chance × (1 + Magic Find/100), but only for drops under 5% base chance. Amounts use the average of min and max.
+- **Drops**: base chance × Looting (1 + 0.15 × level, I–V), then × (1 + Magic Find/100) if the looted chance is still under 5%.
+  - Looting also boosts guaranteed drops: above 100% means a chance of an extra drop.
+  - Amounts use the average of min and max.
 - **Prices**: the best of the Bazaar (instant sell or sell offer, minus Bazaar tax), the lowest BIN (minus AH listing and claim fees) and the NPC price. You can override any price, or untick an item you keep.
 
 ## Project layout

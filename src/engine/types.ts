@@ -70,6 +70,10 @@ export interface Inputs {
   /** Percent. */
   doubleHookChance: number;
   magicFind: number;
+  /** Looting enchantment on the weapon that kills the sea creatures. */
+  lootingEnabled: boolean;
+  /** Looting level 1–5 (+15% drop chance and amount per level). */
+  lootingLevel: number;
   tracking: number;
   fishingLevel: number;
   trophyTitle: number;
@@ -99,8 +103,9 @@ export interface ResolvedPrice {
 export interface DropResult {
   item: string;
   name: string;
-  /** Chance after Magic Find, 0..1. */
+  /** Chance after Looting and Magic Find. Above 1 means a chance of an extra drop. */
   chance: number;
+  lootingApplied: boolean;
   magicFindApplied: boolean;
   avgCount: number;
   /** Expected items per kill. */

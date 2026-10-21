@@ -77,6 +77,12 @@ a { color: var(--magma); }
 .inputs label small { grid-column: 1 / -1; color: var(--ash-dim); font-size: 0.8rem; }
 .inputs label.check { grid-template-columns: auto 1fr; }
 .inputs label:has(select) { grid-template-columns: 1fr; }
+.looting {
+  display: grid; grid-template-columns: 1fr 110px; align-items: center; gap: 2px 12px; margin: 8px 0;
+}
+.inputs .looting label.check { margin: 0; }
+.looting small { grid-column: 1 / -1; color: var(--ash-dim); font-size: 0.8rem; }
+select:disabled { opacity: 0.45; cursor: not-allowed; }
 
 input, select {
   font: inherit; color: var(--ash); background: var(--blackstone);
@@ -163,6 +169,7 @@ input.price::placeholder { color: var(--ash); opacity: 0.85; }
 .src-none { color: var(--r-legendary); }
 .src-override { color: var(--magma); }
 abbr { text-decoration: none; color: var(--magma); cursor: help; }
+abbr.over { color: inherit; text-decoration: underline dotted; }
 
 @media (max-width: 600px) {
   table.creatures .opt { display: none; }
