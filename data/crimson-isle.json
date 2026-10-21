@@ -133,7 +133,7 @@
       "fishingXp": 14925,
       "drops": [
         { "item": "MAGMA_FISH_SILVER", "min": 16, "max": 32, "chance": 1 },
-        { "item": "MAGMA_LORD_FRAGMENT", "min": 1, "max": 1, "chance": 1 },
+        { "item": "MAGMA_LORD_FRAGMENT", "min": 1, "max": 1, "chance": 1, "lootingExtra": false },
         { "item": "SHARD_LORD_JAWBUS", "name": "Lord Jawbus Shard", "min": 1, "max": 1, "chance": 0.02 },
         { "item": "BOBBIN_SCRIPTURES", "min": 1, "max": 1, "chance": 0.01 },
         { "item": "RADIOACTIVE_VIAL", "min": 1, "max": 1, "chance": 0.005 },

@@ -94,18 +94,26 @@ describe('drops and money', () => {
     expect(frag.lootingApplied).toBe(false);
   });
 
-  it('leaves guaranteed drops alone: no second drop above 100%', () => {
+  it('gives guaranteed drops a chance at a second stack (Looting V: +75%)', () => {
     const r = calculate({ ...baseInputs, lootingEnabled: true, lootingLevel: 5, magicFind: 300 }, loc, emptyPrices);
-    const jawbus = byId(r, 'LORD_JAWBUS');
-    const frag = jawbus.drops.find((d) => d.item === 'MAGMA_LORD_FRAGMENT')!;
-    const silver = jawbus.drops.find((d) => d.item === 'MAGMA_FISH_SILVER')!;
+    const flame = byId(r, 'LAVA_FLAME');
+    const heart = flame.drops.find((d) => d.item === 'FLAMING_HEART')!;
+    const fish = flame.drops.find((d) => d.item === 'MAGMA_FISH')!;
+    expect(heart.chance).toBeCloseTo(1.75);
+    expect(heart.perKill).toBeCloseTo(1.75);
+    expect(fish.perKill).toBeCloseTo(40 * 1.75);
+    expect(heart.magicFindApplied).toBe(false);
+  });
+
+  it('never doubles Magma Lord Fragments', () => {
+    const r = calculate({ ...baseInputs, lootingEnabled: true, lootingLevel: 5 }, loc, emptyPrices);
+    const frag = byId(r, 'LORD_JAWBUS').drops.find((d) => d.item === 'MAGMA_LORD_FRAGMENT')!;
     expect(frag.chance).toBe(1);
     expect(frag.perKill).toBe(1);
     expect(frag.lootingApplied).toBe(false);
-    expect(silver.perKill).toBe(24);
   });
 
-  it('boosts chance drops by 15% per Looting level, capped at 100%', () => {
+  it('boosts chance drops by 15% per Looting level, past 100% too', () => {
     const level3 = calculate({ ...baseInputs, lootingEnabled: true, lootingLevel: 3 }, loc, emptyPrices);
     // Wiki example: Radioactive Vial 0.5% → 0.725% with Looting III.
     expect(byId(level3, 'LORD_JAWBUS').drops.find((d) => d.item === 'RADIOACTIVE_VIAL')!.chance).toBeCloseTo(0.00725);
@@ -117,8 +125,8 @@ describe('drops and money', () => {
       }],
     };
     const half = calculate({ ...baseInputs, lootingEnabled: true, lootingLevel: 5 }, mini, emptyPrices).creatures[0].drops[0];
-    expect(half.chance).toBe(1);
-    expect(half.perKill).toBe(1);
+    expect(half.chance).toBeCloseTo(1.05);
+    expect(half.perKill).toBeCloseTo(1.05);
   });
 
   it('applies Looting before Magic Find and checks the 5% limit on the looted chance', () => {

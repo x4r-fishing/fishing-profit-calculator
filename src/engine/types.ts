@@ -11,6 +11,11 @@ export interface Drop {
   chance: number;
   /** Force Magic Find on/off. Default: affected when base chance < 5%. */
   magicFind?: boolean;
+  /**
+   * Whether Looting can push this drop past 100% for a chance at a second stack.
+   * Default true; false for drops that never double (e.g. Magma Lord Fragment).
+   */
+  lootingExtra?: boolean;
 }
 
 export interface SeaCreature {
@@ -103,7 +108,10 @@ export interface ResolvedPrice {
 export interface DropResult {
   item: string;
   name: string;
-  /** Chance after Looting and Magic Find, 0..1. */
+  /**
+   * Expected number of stacks per kill after Looting and Magic Find.
+   * Above 1 means a chance of a second stack (e.g. 1.75 = one stack plus 75% for another).
+   */
   chance: number;
   lootingApplied: boolean;
   magicFindApplied: boolean;

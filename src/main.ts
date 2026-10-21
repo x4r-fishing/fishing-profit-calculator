@@ -82,7 +82,7 @@ function boostMark(d: { lootingApplied: boolean; magicFindApplied: boolean }): s
 }
 
 function chance(p: number): string {
-  if (p >= 1) return '100%';
+  if (p >= 1) return `${+(p * 100).toFixed(1)}%`;
   if (p >= 0.001) return `${+(p * 100).toFixed(2)}%`;
   return `1 in ${intFmt.format(Math.round(1 / p))}`;
 }
@@ -213,7 +213,9 @@ function renderCreatures(r: CalcResult) {
                 ${esc(d.name)}${d.avgCount === 1 ? '' : ` <span class="qty">×${Number.isInteger(d.avgCount) ? d.avgCount : count(d.avgCount)}</span>`}
               </label>
             </td>
-            <td class="num">${chance(d.chance)}${boostMark(d)}</td>
+            <td class="num">${d.chance > 1
+              ? `<abbr class="over" title="1 stack plus ${+((d.chance - 1) * 100).toFixed(1)}% chance of a second">${chance(d.chance)}</abbr>`
+              : chance(d.chance)}${boostMark(d)}</td>
             <td class="num">
               <input class="price" type="text" inputmode="decimal" data-price="${d.item}" data-focus="price-${c.id}-${d.item}"
                 value="${override !== undefined ? override : ''}" placeholder="${kept ? '—' : coins(d.price.unit)}"
@@ -385,7 +387,8 @@ locSelect.addEventListener('change', () => {
 
 $('foot').innerHTML = `
   <p>Expected values: sea creatures per hour = catches × Sea Creature Chance × (1 + Double Hook Chance), split by spawn weight.
-  Looting adds 15% per level to drop chances (up to 100%; guaranteed drops don't change), then
+  Looting adds 15% per level to drop chances. Above 100% it's a chance at a second stack (Looting V on a
+  guaranteed drop: 75%), except Magma Lord Fragments, which never double. Then
   Magic Find boosts drops that are still under 5%. Rare drops are averages — your luck will vary a lot over a few hours.</p>
   <p>Data: ${(location.sources ?? []).map((s) => (s.startsWith('http') ? `<a href="${esc(s)}">${esc(new URL(s).hostname)}</a>` : esc(s))).join(' and ')}.
   Prices from the Hypixel API. Not affiliated with Hypixel.</p>`;

@@ -14,7 +14,7 @@ export const TROPHY_TITLES = ['None', 'Novice', 'Adept', 'Expert', 'Master'] as 
 /** Magic Find only boosts drops whose base chance is below 5%. */
 export const MAGIC_FIND_THRESHOLD = 0.05;
 
-/** Looting adds 15% per level to drop chance, up to 100%. */
+/** Looting adds 15% per level to drop chance; above 100% it's a chance at a second stack. */
 export const LOOTING_PER_LEVEL = 0.15;
 export const MAX_LOOTING_LEVEL = 5;
 
@@ -80,11 +80,12 @@ export function calculate(inputs: Inputs, loc: LocationData, prices: PriceData):
 
     const drops: DropResult[] = c.drops.map((d) => {
       // Looting applies first; Magic Find then checks the looted chance against the 5% threshold.
-      // On the live servers a boosted chance stops at 100%: no second drop (that only comes with
-      // the Magic Find rework, which is still on the Alpha network). Guaranteed drops are unchanged.
-      const looted = Math.min(1, d.chance * looting);
+      // A looted chance above 100% gives a chance at a second stack (1.75 = one stack + 75% for
+      // another), except for drops marked lootingExtra: false, which stop at 100%.
+      const canExceed = d.lootingExtra !== false;
+      const looted = canExceed ? d.chance * looting : Math.min(Math.max(1, d.chance), d.chance * looting);
       const mfApplies = d.magicFind ?? looted < MAGIC_FIND_THRESHOLD;
-      const chance = Math.min(1, mfApplies ? looted * (1 + mf) : looted);
+      const chance = mfApplies ? looted * (1 + mf) : looted;
       const avgCount = (d.min + d.max) / 2;
       const perKill = chance * avgCount;
       const price = resolvePrice(d.item, prices, priceOpts);
@@ -94,7 +95,7 @@ export function calculate(inputs: Inputs, loc: LocationData, prices: PriceData):
         item: d.item,
         name: prices.names[d.item] ?? d.name ?? prettyId(d.item),
         chance,
-        lootingApplied: looting > 1 && d.chance < 1,
+        lootingApplied: looting > 1 && (canExceed || d.chance < 1),
         magicFindApplied: mfApplies && mf > 0,
         avgCount,
         perKill,
