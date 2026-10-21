@@ -94,16 +94,31 @@ describe('drops and money', () => {
     expect(frag.lootingApplied).toBe(false);
   });
 
-  it('boosts every drop by 15% per Looting level, guaranteed ones included', () => {
-    const r = calculate({ ...baseInputs, lootingEnabled: true, lootingLevel: 5 }, loc, emptyPrices);
+  it('leaves guaranteed drops alone: no second drop above 100%', () => {
+    const r = calculate({ ...baseInputs, lootingEnabled: true, lootingLevel: 5, magicFind: 300 }, loc, emptyPrices);
     const jawbus = byId(r, 'LORD_JAWBUS');
     const frag = jawbus.drops.find((d) => d.item === 'MAGMA_LORD_FRAGMENT')!;
     const silver = jawbus.drops.find((d) => d.item === 'MAGMA_FISH_SILVER')!;
-    expect(frag.chance).toBeCloseTo(1.75);
-    expect(frag.perKill).toBeCloseTo(1.75);
-    expect(silver.perKill).toBeCloseTo(24 * 1.75);
+    expect(frag.chance).toBe(1);
+    expect(frag.perKill).toBe(1);
+    expect(frag.lootingApplied).toBe(false);
+    expect(silver.perKill).toBe(24);
+  });
+
+  it('boosts chance drops by 15% per Looting level, capped at 100%', () => {
     const level3 = calculate({ ...baseInputs, lootingEnabled: true, lootingLevel: 3 }, loc, emptyPrices);
-    expect(byId(level3, 'LORD_JAWBUS').drops.find((d) => d.item === 'RADIOACTIVE_VIAL')!.chance).toBeCloseTo(0.005 * 1.45);
+    // Wiki example: Radioactive Vial 0.5% → 0.725% with Looting III.
+    expect(byId(level3, 'LORD_JAWBUS').drops.find((d) => d.item === 'RADIOACTIVE_VIAL')!.chance).toBeCloseTo(0.00725);
+    const mini: LocationData = {
+      id: 'TEST', name: 'Test', liquid: 'water',
+      creatures: [{
+        id: 'X', name: 'X', rarity: 'RARE', weight: 1, requires: { fishingLevel: 0 }, fishingXp: 0,
+        drops: [{ item: 'HALF', min: 1, max: 1, chance: 0.6 }],
+      }],
+    };
+    const half = calculate({ ...baseInputs, lootingEnabled: true, lootingLevel: 5 }, mini, emptyPrices).creatures[0].drops[0];
+    expect(half.chance).toBe(1);
+    expect(half.perKill).toBe(1);
   });
 
   it('applies Looting before Magic Find and checks the 5% limit on the looted chance', () => {

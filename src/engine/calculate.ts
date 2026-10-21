@@ -14,7 +14,7 @@ export const TROPHY_TITLES = ['None', 'Novice', 'Adept', 'Expert', 'Master'] as 
 /** Magic Find only boosts drops whose base chance is below 5%. */
 export const MAGIC_FIND_THRESHOLD = 0.05;
 
-/** Looting adds 15% per level to drop chance (and to amount, once the chance passes 100%). */
+/** Looting adds 15% per level to drop chance, up to 100%. */
 export const LOOTING_PER_LEVEL = 0.15;
 export const MAX_LOOTING_LEVEL = 5;
 
@@ -80,9 +80,11 @@ export function calculate(inputs: Inputs, loc: LocationData, prices: PriceData):
 
     const drops: DropResult[] = c.drops.map((d) => {
       // Looting applies first; Magic Find then checks the looted chance against the 5% threshold.
-      const looted = d.chance * looting;
+      // On the live servers a boosted chance stops at 100%: no second drop (that only comes with
+      // the Magic Find rework, which is still on the Alpha network). Guaranteed drops are unchanged.
+      const looted = Math.min(1, d.chance * looting);
       const mfApplies = d.magicFind ?? looted < MAGIC_FIND_THRESHOLD;
-      const chance = mfApplies ? looted * (1 + mf) : looted;
+      const chance = Math.min(1, mfApplies ? looted * (1 + mf) : looted);
       const avgCount = (d.min + d.max) / 2;
       const perKill = chance * avgCount;
       const price = resolvePrice(d.item, prices, priceOpts);
@@ -92,7 +94,7 @@ export function calculate(inputs: Inputs, loc: LocationData, prices: PriceData):
         item: d.item,
         name: prices.names[d.item] ?? d.name ?? prettyId(d.item),
         chance,
-        lootingApplied: looting > 1,
+        lootingApplied: looting > 1 && d.chance < 1,
         magicFindApplied: mfApplies && mf > 0,
         avgCount,
         perKill,

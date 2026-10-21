@@ -103,7 +103,7 @@ export interface ResolvedPrice {
 export interface DropResult {
   item: string;
   name: string;
-  /** Chance after Looting and Magic Find. Above 1 means a chance of an extra drop. */
+  /** Chance after Looting and Magic Find, 0..1. */
   chance: number;
   lootingApplied: boolean;
   magicFindApplied: boolean;

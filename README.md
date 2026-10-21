@@ -11,7 +11,7 @@ First location: **Crimson Isle lava fishing outside hotspots** (Thunder and Lord
   - Whale, Light and Dark bait multiply the weight of creatures under 400 base weight by 1.25.
   - Tracking multiplies the weight of elusive creatures (Thunder, Lord Jawbus) by (1 + Tracking/100).
 - **Drops**: base chance × Looting (1 + 0.15 × level, I–V), then × (1 + Magic Find/100) if the looted chance is still under 5%.
-  - Looting also boosts guaranteed drops: above 100% means a chance of an extra drop.
+  - Chances stop at 100%: Looting doesn't give a second Magma Lord Fragment or extra Silver Magmafish. (The Magic Find rework on the Alpha network adds second drops; not live yet.)
   - Amounts use the average of min and max.
 - **Prices**: the best of the Bazaar (instant sell or sell offer, minus Bazaar tax), the lowest BIN (minus AH listing and claim fees) and the NPC price. You can override any price, or untick an item you keep.
 
