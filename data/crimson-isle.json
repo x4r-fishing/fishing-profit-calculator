@@ -1,0 +1,144 @@
+{
+  "id": "CRIMSON_ISLE_LAVA",
+  "name": "Crimson Isle – lava (no hotspot)",
+  "liquid": "lava",
+  "notes": "Standard lava sea creature pool on the Crimson Isle outside of hotspots. Weights and drops from the Hypixel SkyBlock wiki, cross-checked against the NotEnoughUpdates item repo.",
+  "sources": [
+    "https://hypixelskyblock.minecraft.wiki/w/Sea_Creatures/List/Crimson_Isle",
+    "https://github.com/NotEnoughUpdates/NotEnoughUpdates-REPO (items/*_SC.json)"
+  ],
+  "baitBonus": { "maxBaseWeight": 399, "multiplier": 1.25 },
+  "creatures": [
+    {
+      "id": "MAGMA_SLUG",
+      "name": "Magma Slug",
+      "rarity": "UNCOMMON",
+      "weight": 1600,
+      "requires": { "fishingLevel": 27 },
+      "fishingXp": 1860,
+      "drops": [
+        { "item": "MAGMA_FISH", "min": 5, "max": 5, "chance": 1 },
+        { "item": "LUMP_OF_MAGMA", "min": 1, "max": 2, "chance": 1 },
+        { "item": "SLUG_BOOTS", "min": 1, "max": 1, "chance": 0.02 },
+        { "item": "DYE_CARMINE", "min": 1, "max": 1, "chance": 2e-7 }
+      ]
+    },
+    {
+      "id": "MOOGMA",
+      "name": "Moogma",
+      "rarity": "UNCOMMON",
+      "weight": 1200,
+      "requires": { "fishingLevel": 28 },
+      "fishingXp": 2030,
+      "drops": [
+        { "item": "MAGMA_FISH", "min": 8, "max": 8, "chance": 1 },
+        { "item": "MOOGMA_PELT", "min": 1, "max": 2, "chance": 1 },
+        { "item": "MOOGMA_LEGGINGS", "min": 1, "max": 1, "chance": 0.02 },
+        { "item": "DYE_CARMINE", "min": 1, "max": 1, "chance": 4e-7 }
+      ]
+    },
+    {
+      "id": "LAVA_LEECH",
+      "name": "Lava Leech",
+      "rarity": "RARE",
+      "weight": 600,
+      "requires": { "fishingLevel": 30 },
+      "fishingXp": 2687,
+      "drops": [
+        { "item": "MAGMA_FISH", "min": 20, "max": 20, "chance": 1 },
+        { "item": "CUP_OF_BLOOD", "min": 1, "max": 1, "chance": 1 },
+        { "item": "BLADE_OF_THE_VOLCANO", "min": 1, "max": 1, "chance": 0.05 },
+        { "item": "PITCHIN_KOI", "min": 1, "max": 1, "chance": 0.004 },
+        { "item": "DYE_CARMINE", "min": 1, "max": 1, "chance": 4e-7 }
+      ]
+    },
+    {
+      "id": "PYROCLASTIC_WORM",
+      "name": "Pyroclastic Worm",
+      "rarity": "RARE",
+      "weight": 400,
+      "requires": { "fishingLevel": 31 },
+      "fishingXp": 1100,
+      "drops": [
+        { "item": "MAGMA_FISH", "min": 10, "max": 10, "chance": 1 },
+        { "item": "PYROCLASTIC_SCALE", "min": 1, "max": 1, "chance": 1 },
+        { "item": "ENCHANTMENT_CHARM_1", "name": "Charm I (book)", "min": 1, "max": 1, "chance": 0.01 },
+        { "item": "DYE_CARMINE", "min": 1, "max": 1, "chance": 4e-7 }
+      ]
+    },
+    {
+      "id": "LAVA_FLAME",
+      "name": "Lava Flame",
+      "rarity": "RARE",
+      "weight": 360,
+      "requires": { "fishingLevel": 33 },
+      "fishingXp": 2737,
+      "drops": [
+        { "item": "MAGMA_FISH", "min": 40, "max": 40, "chance": 1 },
+        { "item": "FLAMING_HEART", "min": 1, "max": 1, "chance": 1 },
+        { "item": "FLAMING_CHESTPLATE", "min": 1, "max": 1, "chance": 0.02 },
+        { "item": "DYE_CARMINE", "min": 1, "max": 1, "chance": 4e-7 }
+      ]
+    },
+    {
+      "id": "FIRE_EEL",
+      "name": "Fire Eel",
+      "rarity": "RARE",
+      "weight": 280,
+      "requires": { "fishingLevel": 34 },
+      "fishingXp": 2200,
+      "drops": [
+        { "item": "MAGMA_FISH", "min": 50, "max": 50, "chance": 1 },
+        { "item": "ORB_OF_ENERGY", "min": 1, "max": 1, "chance": 1 },
+        { "item": "STAFF_OF_THE_VOLCANO", "min": 1, "max": 1, "chance": 0.05 },
+        { "item": "DYE_CARMINE", "min": 1, "max": 1, "chance": 4e-7 }
+      ]
+    },
+    {
+      "id": "TAURUS",
+      "name": "Taurus",
+      "rarity": "EPIC",
+      "weight": 160,
+      "requires": { "fishingLevel": 35 },
+      "fishingXp": 4300,
+      "drops": [
+        { "item": "MAGMA_FISH_SILVER", "min": 1, "max": 1, "chance": 1 },
+        { "item": "HORN_OF_TAURUS", "min": 1, "max": 1, "chance": 1 },
+        { "item": "TAURUS_HELMET", "min": 1, "max": 1, "chance": 0.02 },
+        { "item": "DYE_CARMINE", "min": 1, "max": 1, "chance": 4e-7 }
+      ]
+    },
+    {
+      "id": "THUNDER",
+      "name": "Thunder",
+      "rarity": "LEGENDARY",
+      "elusive": true,
+      "weight": 40,
+      "requires": { "fishingLevel": 36, "trophyTitle": 1 },
+      "fishingXp": 6480,
+      "drops": [
+        { "item": "MAGMA_FISH_SILVER", "min": 8, "max": 16, "chance": 1 },
+        { "item": "THUNDER_SHARDS", "min": 1, "max": 1, "chance": 1 },
+        { "item": "ENCHANTMENT_ULTIMATE_FLASH_1", "name": "Flash I (book)", "min": 1, "max": 1, "chance": 0.015 },
+        { "item": "DYE_CARMINE", "min": 1, "max": 1, "chance": 2e-5 }
+      ]
+    },
+    {
+      "id": "LORD_JAWBUS",
+      "name": "Lord Jawbus",
+      "rarity": "MYTHIC",
+      "elusive": true,
+      "weight": 8,
+      "requires": { "fishingLevel": 45, "trophyTitle": 2 },
+      "fishingXp": 14925,
+      "drops": [
+        { "item": "MAGMA_FISH_SILVER", "min": 16, "max": 32, "chance": 1 },
+        { "item": "MAGMA_LORD_FRAGMENT", "min": 1, "max": 1, "chance": 1 },
+        { "item": "SHARD_LORD_JAWBUS", "name": "Lord Jawbus Shard", "min": 1, "max": 1, "chance": 0.02 },
+        { "item": "BOBBIN_SCRIPTURES", "min": 1, "max": 1, "chance": 0.01 },
+        { "item": "RADIOACTIVE_VIAL", "min": 1, "max": 1, "chance": 0.005 },
+        { "item": "DYE_CARMINE", "min": 1, "max": 1, "chance": 2e-5 }
+      ]
+    }
+  ]
+}

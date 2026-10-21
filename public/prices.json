@@ -1,0 +1,114 @@
+{
+ "updated": "2026-10-21T17:36:24.963Z",
+ "sample": true,
+ "bazaar": {
+  "MAGMA_FISH": {
+   "instaSell": 6,
+   "sellOffer": 9
+  },
+  "MAGMA_FISH_SILVER": {
+   "instaSell": 180,
+   "sellOffer": 230
+  },
+  "LUMP_OF_MAGMA": {
+   "instaSell": 900,
+   "sellOffer": 1200
+  },
+  "MOOGMA_PELT": {
+   "instaSell": 1100,
+   "sellOffer": 1500
+  },
+  "CUP_OF_BLOOD": {
+   "instaSell": 1400,
+   "sellOffer": 1900
+  },
+  "PYROCLASTIC_SCALE": {
+   "instaSell": 1800,
+   "sellOffer": 2500
+  },
+  "FLAMING_HEART": {
+   "instaSell": 4500,
+   "sellOffer": 6000
+  },
+  "ORB_OF_ENERGY": {
+   "instaSell": 4200,
+   "sellOffer": 5600
+  },
+  "HORN_OF_TAURUS": {
+   "instaSell": 9000,
+   "sellOffer": 12000
+  },
+  "THUNDER_SHARDS": {
+   "instaSell": 1300000,
+   "sellOffer": 1500000
+  },
+  "MAGMA_LORD_FRAGMENT": {
+   "instaSell": 380000,
+   "sellOffer": 430000
+  },
+  "ENCHANTMENT_CHARM_1": {
+   "instaSell": 90000,
+   "sellOffer": 120000
+  },
+  "ENCHANTMENT_ULTIMATE_FLASH_1": {
+   "instaSell": 250000,
+   "sellOffer": 320000
+  },
+  "SHARD_LORD_JAWBUS": {
+   "instaSell": 2500000,
+   "sellOffer": 3100000
+  }
+ },
+ "auction": {
+  "RADIOACTIVE_VIAL": {
+   "lowestBin": 140000000,
+   "count": 5
+  },
+  "BOBBIN_SCRIPTURES": {
+   "lowestBin": 9000000,
+   "count": 5
+  },
+  "DYE_CARMINE": {
+   "lowestBin": 45000000,
+   "count": 5
+  },
+  "SLUG_BOOTS": {
+   "lowestBin": 90000,
+   "count": 5
+  },
+  "MOOGMA_LEGGINGS": {
+   "lowestBin": 85000,
+   "count": 5
+  },
+  "BLADE_OF_THE_VOLCANO": {
+   "lowestBin": 150000,
+   "count": 5
+  },
+  "PITCHIN_KOI": {
+   "lowestBin": 1800000,
+   "count": 5
+  },
+  "FLAMING_CHESTPLATE": {
+   "lowestBin": 160000,
+   "count": 5
+  },
+  "STAFF_OF_THE_VOLCANO": {
+   "lowestBin": 180000,
+   "count": 5
+  },
+  "TAURUS_HELMET": {
+   "lowestBin": 220000,
+   "count": 5
+  }
+ },
+ "npc": {
+  "MAGMA_FISH": 5
+ },
+ "names": {
+  "MAGMA_FISH": "Magmafish",
+  "MAGMA_FISH_SILVER": "Silver Magmafish",
+  "THUNDER_SHARDS": "Thunder Fragment",
+  "PITCHIN_KOI": "Pitchin' Koi"
+ },
+ "missing": []
+}

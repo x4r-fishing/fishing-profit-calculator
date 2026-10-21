@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lava Fishing Profits</title>
+    <meta name="description" content="Coins per hour for Hypixel SkyBlock sea creature fishing, from your stats and live Bazaar / Auction House prices." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Pixelify+Sans:wght@500;700&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <header class="top">
+      <h1>Lava fishing profits</h1>
+      <label class="loc">
+        <span class="sr-only">Location</span>
+        <select id="location"></select>
+      </label>
+      <div class="price-status" id="price-status" role="status"></div>
+    </header>
+
+    <main class="layout">
+      <form id="inputs" class="inputs" autocomplete="off">
+        <fieldset>
+          <legend>Rod and stats</legend>
+          <label>Catches per hour <input name="catchesPerHour" type="number" min="0" step="10" /></label>
+          <label>Sea Creature Chance % <input name="seaCreatureChance" type="number" min="0" max="100" step="0.1" /></label>
+          <label>Double Hook Chance % <input name="doubleHookChance" type="number" min="0" step="0.1" /></label>
+          <label>Magic Find <input name="magicFind" type="number" min="0" step="1" /></label>
+          <label>Tracking <input name="tracking" type="number" min="0" step="1" />
+            <small>Boosts Thunder and Lord Jawbus weight</small></label>
+        </fieldset>
+        <fieldset>
+          <legend>Unlocks</legend>
+          <label>Fishing level <input name="fishingLevel" type="number" min="0" max="60" step="1" /></label>
+          <label>Trophy Fisher title
+            <select name="trophyTitle">
+              <option value="0">None</option>
+              <option value="1">Novice (unlocks Thunder)</option>
+              <option value="2">Adept (unlocks Lord Jawbus)</option>
+              <option value="3">Expert</option>
+              <option value="4">Master</option>
+            </select>
+          </label>
+          <label class="check"><input name="rareBait" type="checkbox" /> Whale, Light or Dark bait
+            <small>×1.25 weight for creatures under 400 weight</small></label>
+        </fieldset>
+        <fieldset>
+          <legend>Selling</legend>
+          <label>Bazaar items
+            <select name="bazaarMode">
+              <option value="instaSell">Sell instantly</option>
+              <option value="sellOffer">Create sell offers</option>
+            </select>
+          </label>
+          <label class="check"><input name="applyTax" type="checkbox" /> Subtract Bazaar tax and AH fees</label>
+          <label>Bazaar tax % <input name="bazaarTax" type="number" min="0" max="5" step="0.125" /></label>
+        </fieldset>
+        <button type="button" id="reset" class="link">Reset to defaults</button>
+      </form>
+
+      <section class="results" aria-live="polite">
+        <div class="hero">
+          <p class="hero-label">Expected profit</p>
+          <p class="hero-value"><span id="coins-hr"></span><span class="unit">/ hour</span></p>
+          <dl class="stats">
+            <div><dt>Sea creatures</dt><dd id="sc-hr"></dd></div>
+            <div><dt>Coins per creature</dt><dd id="coins-sc"></dd></div>
+            <div><dt>Fishing XP</dt><dd id="xp-hr"></dd></div>
+          </dl>
+        </div>
+
+        <div class="bars">
+          <div class="bar-row"><span>Catches</span><div class="bar" id="bar-catches"></div></div>
+          <div class="bar-row"><span>Coins</span><div class="bar" id="bar-coins"></div></div>
+        </div>
+
+        <p class="warn" id="missing" hidden></p>
+
+        <h2>Sea creatures</h2>
+        <p class="hint">Select a creature to see its drops. Type a price to override it; untick an item you keep instead of selling.</p>
+        <div class="table-wrap">
+          <table class="creatures">
+            <thead>
+              <tr>
+                <th scope="col">Creature</th>
+                <th scope="col" class="num">Share</th>
+                <th scope="col" class="num opt">Per hour</th>
+                <th scope="col" class="num opt">One every</th>
+                <th scope="col" class="num opt">Coins / kill</th>
+                <th scope="col" class="num">Coins / hour</th>
+              </tr>
+            </thead>
+            <tbody id="creature-rows"></tbody>
+          </table>
+        </div>
+
+        <h2>Rare drop timers</h2>
+        <p class="hint">Average fishing time until one drop, at your current rates.</p>
+        <ul class="timers" id="timers"></ul>
+      </section>
+    </main>
+
+    <footer class="foot" id="foot"></footer>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
