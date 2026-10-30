@@ -39,7 +39,7 @@
             <small>On the weapon you kill sea creatures with. Raises drop chances; guaranteed drops get a chance to double.</small>
           </div>
           <label>Tracking <input name="tracking" type="number" min="0" step="1" />
-            <small>Boosts Thunder and Lord Jawbus weight</small></label>
+            <small>Boosts the weight of elusive creatures: Thunder, Lord Jawbus, Fiery Scuttler, Ragnarok</small></label>
         </fieldset>
         <fieldset>
           <legend>Unlocks</legend>
@@ -53,8 +53,23 @@
               <option value="4">Master</option>
             </select>
           </label>
-          <label class="check"><input name="rareBait" type="checkbox" /> Whale, Light or Dark bait
-            <small>×1.25 weight for creatures under 400 weight</small></label>
+        </fieldset>
+        <fieldset>
+          <legend>Bait and hotspot</legend>
+          <label>Bait
+            <select name="bait">
+              <option value="none">No bait bonus</option>
+              <option value="rare">Whale, Light or Dark Bait</option>
+              <option value="hotspot">Hotspot Bait</option>
+            </select>
+            <small id="bait-hint"></small>
+          </label>
+          <div id="hotspot-fields">
+            <label class="check"><input name="hotspotHook" type="checkbox" /> <span>Hotspot Hook <span class="pct">+20%</span></span></label>
+            <label class="check"><input name="hotspotTonic" type="checkbox" /> <span>Hotspot Tonic <span class="pct">+10%</span></span></label>
+            <label class="check"><input name="hermitCrab" type="checkbox" /> <span>Hermit Crab, Mythic Lvl 100 <span class="pct">+20%</span></span></label>
+            <small class="note">Chance that a sea creature is a hotspot creature: 15% base plus these.</small>
+          </div>
         </fieldset>
         <fieldset>
           <legend>Selling</legend>
@@ -78,7 +93,9 @@
             <div><dt>Sea creatures</dt><dd id="sc-hr"></dd></div>
             <div><dt>Coins per creature</dt><dd id="coins-sc"></dd></div>
             <div><dt>Fishing XP</dt><dd id="xp-hr"></dd></div>
+            <div id="hotspot-stat" hidden><dt>Hotspot creatures</dt><dd id="hotspot-pct"></dd></div>
           </dl>
+          <div class="compare" id="bait-compare"></div>
         </div>
 
         <div class="bars">

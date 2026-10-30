@@ -1,0 +1,109 @@
+{
+  "id": "CRIMSON_ISLE_LAVA_HOTSPOT",
+  "name": "Crimson Isle – lava hotspot",
+  "liquid": "lava",
+  "extends": "CRIMSON_ISLE_LAVA",
+  "notes": "Fishing inside a lava hotspot on the Crimson Isle. Each sea creature catch is a hotspot creature with 15% base chance (+10% Hotspot Tonic, +20% Hotspot Hook, +20% Hotspot Bait, +20% Mythic Hermit Crab), otherwise a creature from the normal lava pool.",
+  "sources": [
+    "https://hypixelskyblock.minecraft.wiki/w/Sea_Creatures/List/Hotspot",
+    "https://hypixel.net/threads/hypixel-skyblock-0-25-lotus-atoll.6100264/"
+  ],
+  "creatures": [],
+  "hotspot": {
+    "baseChance": 0.15,
+    "creatures": [
+      {
+        "id": "FRIED_CHICKEN",
+        "name": "Fried Chicken",
+        "rarity": "COMMON",
+        "weight": 5000,
+        "requires": { "fishingLevel": 14 },
+        "fishingXp": 645,
+        "drops": [
+          { "item": "MAGMA_FISH", "min": 1, "max": 2, "chance": 1 },
+          { "item": "FRIED_FEATHER", "min": 1, "max": 1, "chance": 0.1 },
+          { "item": "DYE_CARMINE", "min": 1, "max": 1, "chance": 2e-7 }
+        ]
+      },
+      {
+        "id": "VOLCANIC_SNAIL",
+        "name": "Volcanic Snail",
+        "rarity": "UNCOMMON",
+        "weight": 2875,
+        "requires": { "fishingLevel": 17 },
+        "fishingXp": 900,
+        "drops": [
+          { "item": "MAGMA_FISH", "min": 2, "max": 4, "chance": 1 },
+          { "item": "SEARED_ESCARGOT", "min": 1, "max": 1, "chance": 0.04 },
+          { "item": "MAGMA_FISH_SILVER", "min": 1, "max": 1, "chance": 0.01 },
+          { "item": "DYE_CARMINE", "min": 1, "max": 1, "chance": 2e-7 }
+        ]
+      },
+      {
+        "id": "FIREPROOF_WITCH",
+        "name": "Fireproof Witch",
+        "rarity": "RARE",
+        "weight": 1500,
+        "requires": { "fishingLevel": 22 },
+        "fishingXp": 1875,
+        "drops": [
+          { "item": "MAGMA_FISH", "min": 8, "max": 16, "chance": 1 },
+          { "item": "SULPHUR", "name": "Gunpowder", "min": 8, "max": 8, "chance": 1 },
+          { "item": "ENCHANTED_GLOWSTONE_DUST", "min": 1, "max": 1, "chance": 0.2 },
+          { "item": "ENCHANTED_GUNPOWDER", "min": 1, "max": 1, "chance": 0.05 },
+          { "item": "SINGED_POWDER", "min": 1, "max": 1, "chance": 0.01 },
+          { "item": "ENCHANTED_GLOWSTONE", "min": 1, "max": 1, "chance": 0.0025 },
+          { "item": "ENCHANTMENT_FIRE_PROTECTION_6", "name": "Fire Protection VI (book)", "min": 1, "max": 1, "chance": 0.0001 },
+          { "item": "DYE_CARMINE", "min": 1, "max": 1, "chance": 4e-7 }
+        ]
+      },
+      {
+        "id": "MAGMA_PILLAR",
+        "name": "Magma Pillar",
+        "rarity": "EPIC",
+        "weight": 500,
+        "requires": { "fishingLevel": 31 },
+        "fishingXp": 3300,
+        "drops": [
+          { "item": "MAGMA_FISH_SILVER", "min": 2, "max": 4, "chance": 1 },
+          { "item": "ENCHANTED_MAGMA_CREAM", "min": 2, "max": 4, "chance": 1 },
+          { "item": "ENCHANTMENT_MAGMARIZER_6", "name": "Pyroclasm VI (book)", "aliases": ["ENCHANTMENT_PYROCLASM_6"], "min": 1, "max": 1, "chance": 0.0005 },
+          { "item": "DYE_CARMINE", "min": 1, "max": 1, "chance": 4e-7 }
+        ]
+      },
+      {
+        "id": "FIERY_SCUTTLER",
+        "name": "Fiery Scuttler",
+        "rarity": "LEGENDARY",
+        "elusive": true,
+        "weight": 100,
+        "requires": { "fishingLevel": 37 },
+        "fishingXp": 5820,
+        "drops": [
+          { "item": "SCORCHED_CRAB_STICK", "min": 1, "max": 1, "chance": 1 },
+          { "item": "MAGMA_FISH_SILVER", "min": 8, "max": 16, "chance": 1 },
+          { "item": "SEVERED_PINCER", "min": 1, "max": 1, "chance": 0.002 },
+          { "item": "SCUTTLER_SHELL", "min": 1, "max": 1, "chance": 0.001 },
+          { "item": "DYE_CARMINE", "min": 1, "max": 1, "chance": 2e-5 }
+        ]
+      },
+      {
+        "id": "RAGNAROK",
+        "name": "Ragnarok",
+        "rarity": "MYTHIC",
+        "elusive": true,
+        "weight": 25,
+        "requires": { "fishingLevel": 47 },
+        "fishingXp": 15300,
+        "drops": [
+          { "item": "MAGMA_FISH_SILVER", "min": 16, "max": 32, "chance": 1 },
+          { "item": "BOBBIN_SCRIPTURES", "min": 1, "max": 1, "chance": 0.01 },
+          { "item": "CHAIN_END_TIMES", "min": 1, "max": 1, "chance": 0.01 },
+          { "item": "BRIMSTONE_HANDLE", "min": 1, "max": 1, "chance": 0.005 },
+          { "item": "BURNT_TEXTS", "min": 1, "max": 1, "chance": 0.0025 },
+          { "item": "DYE_CARMINE", "min": 1, "max": 1, "chance": 2e-5 }
+        ]
+      }
+    ]
+  }
+}

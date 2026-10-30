@@ -2,7 +2,9 @@
 
 A browser calculator for Hypixel SkyBlock sea creature fishing. Enter your catches per hour, Sea Creature Chance, Double Hook Chance, Magic Find and unlocks. It shows the expected coins per hour, creature by creature and drop by drop, using current Bazaar and Auction House prices.
 
-First location: **Crimson Isle lava fishing outside hotspots** (Thunder and Lord Jawbus).
+Locations:
+- **Crimson Isle lava, no hotspot** (Thunder and Lord Jawbus)
+- **Crimson Isle lava hotspot** (normal lava pool plus Fried Chicken, Volcanic Snail, Fireproof Witch, Magma Pillar, Fiery Scuttler, Ragnarok)
 
 ## How it works
 
@@ -10,6 +12,8 @@ First location: **Crimson Isle lava fishing outside hotspots** (Thunder and Lord
 - **Which creature you get** = its weight ÷ the total weight of all creatures you have unlocked (fishing level and Trophy Fisher title).
   - Whale, Light and Dark bait multiply the weight of creatures under 400 base weight by 1.25.
   - Tracking multiplies the weight of elusive creatures (Thunder, Lord Jawbus) by (1 + Tracking/100).
+- **Hotspots**: each sea creature is a hotspot creature with 15% base chance, +10% Hotspot Tonic, +20% Hotspot Hook, +20% Hotspot Bait, +20% Mythic Hermit Crab (Lvl 100); otherwise it comes from the normal pool. Within each pool, creatures are picked by weight.
+  - The page compares coins/hour with no bait, Whale/Light/Dark Bait and Hotspot Bait for the same setup.
 - **Drops**: base chance × Looting (1 + 0.15 × level, I–V), then × (1 + Magic Find/100) if the looted chance is still under 5%.
   - Above 100% the extra is a chance at a second stack: Looting V on a guaranteed drop gives one stack plus 75% for another. Thunder Fragments and Magma Lord Fragments always drop exactly one (`lootingExtra: false` in the data); Silver Magmafish from Thunder and Jawbus can double.
   - Amounts use the average of min and max.
@@ -19,7 +23,7 @@ First location: **Crimson Isle lava fishing outside hotspots** (Thunder and Lord
 
 | Path | What it is |
 |---|---|
-| `data/*.json` | One file per fishing location: creatures, weights, unlocks, XP, drop tables |
+| `data/*.json` | One file per fishing location: creatures, weights, unlocks, XP, drop tables. `extends` reuses another location's pool; `hotspot` adds a hotspot-only pool |
 | `src/engine/` | Pure calculation (`calculate(inputs, location, prices)`) and pricing, with tests |
 | `src/main.ts`, `index.html`, `src/style.css` | The web page |
 | `scripts/fetch-prices.mjs` | Pulls Bazaar, every Auction House page (lowest BIN) and NPC prices from the Hypixel API into `public/prices.json` |

@@ -1,10 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import crimson from '../../data/crimson-isle.json';
-import { calculate, effectiveWeight, seaCreaturesPerHour } from './calculate';
+import crimsonHotspot from '../../data/crimson-isle-hotspot.json';
+import { calculate, effectiveWeight, hotspotChance, seaCreaturesPerHour } from './calculate';
+import { resolveLocations } from './locations';
 import { auctionFeeRate, resolvePrice } from './pricing';
 import type { Inputs, LocationData, PriceData } from './types';
 
 const loc = crimson as LocationData;
+const hot = resolveLocations([crimson as LocationData, crimsonHotspot as LocationData])[1];
 
 const baseInputs: Inputs = {
   catchesPerHour: 1000,
@@ -16,7 +19,10 @@ const baseInputs: Inputs = {
   tracking: 0,
   fishingLevel: 50,
   trophyTitle: 4,
-  rareBait: false,
+  bait: 'none',
+  hotspotHook: false,
+  hotspotTonic: false,
+  hermitCrab: false,
   bazaarMode: 'instaSell',
   applyTax: false,
   bazaarTax: 1.25,
@@ -61,7 +67,7 @@ describe('creature selection', () => {
   });
 
   it('applies rare bait (x1.25) only to creatures below 400 base weight', () => {
-    const bait = { ...baseInputs, rareBait: true };
+    const bait = { ...baseInputs, bait: 'rare' as const };
     const worm = loc.creatures.find((c) => c.id === 'PYROCLASTIC_WORM')!;
     const flame = loc.creatures.find((c) => c.id === 'LAVA_FLAME')!;
     expect(effectiveWeight(worm, bait, loc)).toBe(400);
@@ -211,5 +217,56 @@ describe('pricing', () => {
 
   it('honours overrides', () => {
     expect(resolvePrice('A', prices, { ...opts, overrides: { A: 1 } })).toMatchObject({ unit: 1, source: 'override' });
+  });
+});
+
+describe('lava hotspot', () => {
+  const all = { ...baseInputs, hotspotHook: true, hotspotTonic: true, hermitCrab: true, bait: 'hotspot' as const };
+
+  it('includes the normal lava pool plus the hotspot pool', () => {
+    expect(hot.creatures.map((c) => c.id)).toContain('LORD_JAWBUS');
+    expect(hot.hotspot!.creatures.reduce((a, c) => a + c.weight, 0)).toBe(10000);
+  });
+
+  it('starts at 15% and adds Tonic 10%, Hook 20%, Hotspot Bait 20%, Hermit Crab 20%', () => {
+    expect(hotspotChance(baseInputs, hot)).toBeCloseTo(0.15);
+    expect(hotspotChance(all, hot)).toBeCloseTo(0.85);
+    expect(hotspotChance({ ...all, bait: 'rare' }, hot)).toBeCloseTo(0.65);
+    expect(hotspotChance(all, loc)).toBe(0);
+  });
+
+  it('splits catches between the pools, then by weight inside each pool', () => {
+    const r = calculate(all, hot, emptyPrices);
+    expect(r.hotspotChance).toBeCloseTo(0.85);
+    expect(byId(r, 'RAGNAROK').share).toBeCloseTo(0.85 * (25 / 10000));
+    expect(byId(r, 'RAGNAROK').pool).toBe('hotspot');
+    expect(byId(r, 'LORD_JAWBUS').share).toBeCloseTo(0.15 * (8 / 4648));
+    expect(r.creatures.reduce((a, c) => a + c.share, 0)).toBeCloseTo(1);
+  });
+
+  it('applies Whale bait (x1.25 under 400 weight) in both pools, but loses the Hotspot Bait bonus', () => {
+    const whale = calculate({ ...all, bait: 'rare' }, hot, emptyPrices);
+    const hotspotTotal = 5000 + 2875 + 1500 + 500 + 125 + 31.25;
+    expect(byId(whale, 'RAGNAROK').share).toBeCloseTo(0.65 * (31.25 / hotspotTotal));
+    expect(byId(whale, 'MAGMA_PILLAR').effectiveWeight).toBe(500);
+  });
+
+  it('gives the regular pool everything while no hotspot creature is unlocked, and vice versa', () => {
+    const low = calculate({ ...all, fishingLevel: 12 }, hot, emptyPrices);
+    expect(low.creatures.every((c) => c.share === 0)).toBe(true);
+    const mid = calculate({ ...all, fishingLevel: 20 }, hot, emptyPrices);
+    expect(byId(mid, 'FRIED_CHICKEN').share).toBeCloseTo(5000 / 7875);
+  });
+
+  it('lets Looting double Scorched Crab Sticks', () => {
+    const r = calculate({ ...all, lootingEnabled: true, lootingLevel: 5 }, hot, emptyPrices);
+    const stick = byId(r, 'FIERY_SCUTTLER').drops.find((d) => d.item === 'SCORCHED_CRAB_STICK')!;
+    expect(stick.perKill).toBeCloseTo(1.75);
+  });
+
+  it('prices a drop through its alias when the main id has no price', () => {
+    const prices: PriceData = { ...emptyPrices, bazaar: { ENCHANTMENT_PYROCLASM_6: { instaSell: 1000, sellOffer: 1000 } } };
+    const book = byId(calculate(all, hot, prices), 'MAGMA_PILLAR').drops.find((d) => d.item === 'ENCHANTMENT_MAGMARIZER_6')!;
+    expect(book.price).toMatchObject({ unit: 1000, source: 'bazaar' });
   });
 });

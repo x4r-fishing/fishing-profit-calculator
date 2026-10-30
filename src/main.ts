@@ -1,10 +1,13 @@
 import './style.css';
 import { calculate, prettyId } from './engine/calculate';
-import type { CalcResult, Inputs, LocationData, PriceData, Rarity } from './engine/types';
+import { resolveLocations } from './engine/locations';
+import type { Bait, CalcResult, Inputs, LocationData, PriceData, Rarity } from './engine/types';
 
-const locations = Object.values(
-  import.meta.glob<LocationData>('../data/*.json', { eager: true, import: 'default' }),
-);
+const locations = resolveLocations(
+  Object.values(import.meta.glob<LocationData>('../data/*.json', { eager: true, import: 'default' })),
+).sort((a, b) => a.name.localeCompare(b.name));
+
+const allCreatures = (l: LocationData) => [...l.creatures, ...(l.hotspot?.creatures ?? [])];
 
 const DEFAULTS: Inputs = {
   catchesPerHour: 700,
@@ -16,7 +19,10 @@ const DEFAULTS: Inputs = {
   tracking: 0,
   fishingLevel: 50,
   trophyTitle: 2,
-  rareBait: false,
+  bait: 'none',
+  hotspotHook: false,
+  hotspotTonic: false,
+  hermitCrab: false,
   bazaarMode: 'instaSell',
   applyTax: true,
   bazaarTax: 1.25,
@@ -25,6 +31,7 @@ const DEFAULTS: Inputs = {
 };
 
 const STORAGE_KEY = 'sb-fishing-calc:v1';
+const LOCATION_KEY = 'sb-fishing-calc:location';
 const BAZAAR_URL = 'https://api.hypixel.net/v2/skyblock/bazaar';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -32,7 +39,7 @@ const form = $<HTMLFormElement>('inputs');
 const locSelect = $<HTMLSelectElement>('location');
 
 let inputs: Inputs = loadInputs();
-let location: LocationData = locations[0];
+let location: LocationData = loadLocation();
 let prices: PriceData = { updated: '', bazaar: {}, auction: {}, npc: {}, names: {} };
 let bazaarLive = false;
 const open = new Set<string>();
@@ -40,11 +47,28 @@ const open = new Set<string>();
 function loadInputs(): Inputs {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return { ...DEFAULTS, ...JSON.parse(raw) };
+    if (raw) {
+      const saved = JSON.parse(raw);
+      // Older versions stored the Whale/Light/Dark bait as a checkbox.
+      if (saved.rareBait && !saved.bait) saved.bait = 'rare';
+      delete saved.rareBait;
+      return { ...DEFAULTS, ...saved };
+    }
   } catch {
     /* storage unavailable */
   }
   return structuredClone(DEFAULTS);
+}
+
+function loadLocation(): LocationData {
+  try {
+    const id = localStorage.getItem(LOCATION_KEY);
+    const found = locations.find((l) => l.id === id);
+    if (found) return found;
+  } catch {
+    /* storage unavailable */
+  }
+  return locations[0];
 }
 
 function saveInputs() {
@@ -131,10 +155,24 @@ function writeForm() {
   syncDependentFields();
 }
 
-/** The Looting level only matters while the Looting box is ticked. */
+const BAIT_HINT: Record<Bait, string> = {
+  none: 'Pick a bait to compare it with your current setup.',
+  rare: '×1.25 weight for creatures under 400 weight (Thunder, Jawbus, Fiery Scuttler, Ragnarok and more).',
+  hotspot: '+20% chance that a sea creature in a hotspot is a hotspot creature.',
+};
+
+/** Shows, hides and disables fields that depend on other choices. */
 function syncDependentFields() {
   const level = form.elements.namedItem('lootingLevel') as HTMLSelectElement;
   level.disabled = !inputs.lootingEnabled;
+  const inHotspot = Boolean(location.hotspot);
+  $('hotspot-fields').hidden = !inHotspot;
+  const bait = form.elements.namedItem('bait') as HTMLSelectElement;
+  const hotspotOption = bait.querySelector<HTMLOptionElement>('option[value="hotspot"]')!;
+  hotspotOption.disabled = !inHotspot;
+  hotspotOption.textContent = inHotspot ? 'Hotspot Bait' : 'Hotspot Bait (only in hotspots)';
+  $('bait-hint').textContent =
+    inputs.bait === 'hotspot' && !inHotspot ? 'Hotspot Bait does nothing outside hotspots.' : BAIT_HINT[inputs.bait] ?? '';
 }
 
 function readForm() {
@@ -183,9 +221,17 @@ function renderBar(el: HTMLElement, parts: { key: string; label: string; rarity:
 }
 
 function renderCreatures(r: CalcResult) {
-  const rows = r.creatures.map((c) => {
+  const groupLabel = (pool: 'regular' | 'hotspot') =>
+    pool === 'hotspot'
+      ? `Hotspot creatures: ${chance(r.hotspotChance)} of sea creatures`
+      : `Normal lava creatures: ${chance(1 - r.hotspotChance)} of sea creatures`;
+  const rows = r.creatures.map((c, i) => {
     const isOpen = open.has(c.id);
-    const main = `
+    const header =
+      location.hotspot && (i === 0 || r.creatures[i - 1].pool !== c.pool)
+        ? `<tr class="group"><th colspan="6" scope="rowgroup">${esc(groupLabel(c.pool))}</th></tr>`
+        : '';
+    const main = `${header}
       <tr class="creature ${c.unlocked ? '' : 'locked'}">
         <th scope="row">
           <button type="button" class="expand" data-toggle="${c.id}" aria-expanded="${isOpen}">
@@ -244,7 +290,7 @@ function renderTimers(r: CalcResult) {
   for (const c of r.creatures) {
     if (!c.unlocked) continue;
     for (const d of c.drops) {
-      const base = location.creatures.find((x) => x.id === c.id)!.drops.find((x) => x.item === d.item)!;
+      const base = allCreatures(location).find((x) => x.id === c.id)!.drops.find((x) => x.item === d.item)!;
       if (base.chance >= 0.05) continue;
       const cur = byItem.get(d.item) ?? { name: d.name, perHour: 0, value: d.price.unit, from: [], rarity: c.rarity };
       cur.perHour += c.perHour * d.chance;
@@ -266,6 +312,29 @@ function renderTimers(r: CalcResult) {
     : '<li class="empty">Unlock creatures to see rare drop timers.</li>';
 }
 
+/** Coins per hour for the same setup with each bait, so the choice is easy to compare. */
+function renderBaitCompare(current: CalcResult) {
+  const options: { bait: Bait; label: string }[] = [
+    { bait: 'none', label: 'No bait bonus' },
+    { bait: 'rare', label: 'Whale / Light / Dark' },
+    ...(location.hotspot ? [{ bait: 'hotspot' as const, label: 'Hotspot Bait' }] : []),
+  ];
+  const results = options.map((o) => ({
+    ...o,
+    coins: o.bait === inputs.bait ? current.coinsPerHour : calculate({ ...inputs, bait: o.bait }, location, prices).coinsPerHour,
+  }));
+  const best = Math.max(...results.map((x) => x.coins));
+  $('bait-compare').innerHTML = `
+    <p class="compare-title">Same setup with each bait</p>
+    <ul>${results
+      .map((x) => `
+      <li class="${x.bait === inputs.bait ? 'current' : ''}">
+        <span>${esc(x.label)}${x.bait === inputs.bait ? ' <small>(selected)</small>' : ''}</span>
+        <span class="c-val">${coins(x.coins)} / h${x.coins === best && best > 0 ? ' <small>best</small>' : ''}</span>
+      </li>`)
+      .join('')}</ul>`;
+}
+
 function renderStatus() {
   const el = $('price-status');
   if (!prices.updated) {
@@ -285,6 +354,9 @@ function render() {
   $('sc-hr').textContent = `${count(r.seaCreaturesPerHour)} / h`;
   $('coins-sc').textContent = coins(r.coinsPerSeaCreature);
   $('xp-hr').textContent = `${coins(r.xpPerHour)} / h`;
+  $('hotspot-stat').hidden = !location.hotspot;
+  $('hotspot-pct').textContent = chance(r.hotspotChance);
+  renderBaitCompare(r);
 
   const unlocked = r.creatures.filter((c) => c.unlocked);
   renderBar($('bar-catches'), unlocked.map((c) => ({ key: c.id, label: c.name, rarity: c.rarity, value: c.share })));
@@ -351,7 +423,9 @@ async function loadPrices() {
 
 /** Pulls fresh Bazaar prices straight from the Hypixel API, if the browser allows it. */
 async function refreshBazaar() {
-  const wanted = new Set(locations.flatMap((l) => l.creatures.flatMap((c) => c.drops.map((d) => d.item))));
+  const wanted = new Set(
+    locations.flatMap((l) => allCreatures(l).flatMap((c) => c.drops.flatMap((d) => [d.item, ...(d.aliases ?? [])]))),
+  );
   try {
     const res = await fetch(BAZAAR_URL);
     const json = await res.json();
@@ -380,19 +454,34 @@ $('price-status').addEventListener('click', (e) => {
 // ---------- boot ----------
 
 locSelect.innerHTML = locations.map((l) => `<option value="${l.id}">${esc(l.name)}</option>`).join('');
+locSelect.value = location.id;
 locSelect.addEventListener('change', () => {
   location = locations.find((l) => l.id === locSelect.value) ?? locations[0];
+  try {
+    localStorage.setItem(LOCATION_KEY, location.id);
+  } catch {
+    /* storage unavailable */
+  }
+  syncDependentFields();
+  renderFooter();
   render();
 });
 
-$('foot').innerHTML = `
-  <p>Expected values: sea creatures per hour = catches × Sea Creature Chance × (1 + Double Hook Chance), split by spawn weight.
+function renderFooter() {
+  const hotspotText = location.hotspot
+    ? ` In a hotspot each sea creature is a hotspot creature with ${chance(location.hotspot.baseChance)} base chance
+  (+10% Hotspot Tonic, +20% Hotspot Hook, +20% Hotspot Bait, +20% Mythic Hermit Crab), otherwise a normal lava creature.`
+    : '';
+  $('foot').innerHTML = `
+  <p>Expected values: sea creatures per hour = catches × Sea Creature Chance × (1 + Double Hook Chance), split by spawn weight.${hotspotText}
   Looting adds 15% per level to drop chances. Above 100% it's a chance at a second stack (Looting V on a
   guaranteed drop: 75%), except Thunder and Magma Lord Fragments, which always drop exactly one. Then
   Magic Find boosts drops that are still under 5%. Rare drops are averages — your luck will vary a lot over a few hours.</p>
   <p>Data: ${(location.sources ?? []).map((s) => (s.startsWith('http') ? `<a href="${esc(s)}">${esc(new URL(s).hostname)}</a>` : esc(s))).join(' and ')}.
   Prices from the Hypixel API. Not affiliated with Hypixel.</p>`;
+}
 
+renderFooter();
 writeForm();
 renderStatus();
 render();

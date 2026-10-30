@@ -39,9 +39,22 @@ export function lockReason(c: SeaCreature, inputs: Inputs): string | undefined {
   return undefined;
 }
 
+/** Additions to the chance that a sea creature caught in a hotspot is a hotspot creature. */
+export const HOTSPOT_BONUS = { tonic: 0.1, hook: 0.2, bait: 0.2, hermitCrab: 0.2 } as const;
+
+export function hotspotChance(inputs: Inputs, loc: LocationData): number {
+  if (!loc.hotspot) return 0;
+  let h = loc.hotspot.baseChance;
+  if (inputs.hotspotTonic) h += HOTSPOT_BONUS.tonic;
+  if (inputs.hotspotHook) h += HOTSPOT_BONUS.hook;
+  if (inputs.bait === 'hotspot') h += HOTSPOT_BONUS.bait;
+  if (inputs.hermitCrab) h += HOTSPOT_BONUS.hermitCrab;
+  return Math.min(Math.max(h, 0), 1);
+}
+
 export function effectiveWeight(c: SeaCreature, inputs: Inputs, loc: LocationData): number {
   let w = c.weight;
-  if (inputs.rareBait && loc.baitBonus && c.weight <= loc.baitBonus.maxBaseWeight) {
+  if (inputs.bait === 'rare' && loc.baitBonus && c.weight <= loc.baitBonus.maxBaseWeight) {
     w *= loc.baitBonus.multiplier;
   }
   if (c.elusive && inputs.tracking > 0) w *= 1 + inputs.tracking / 100;
@@ -67,15 +80,29 @@ export function calculate(inputs: Inputs, loc: LocationData, prices: PriceData):
   const mf = Math.max(inputs.magicFind, 0) / 100;
   const looting = lootingMultiplier(inputs);
 
-  const weights = loc.creatures.map((c) =>
-    lockReason(c, inputs) ? 0 : effectiveWeight(c, inputs, loc),
-  );
-  const totalWeight = weights.reduce((a, b) => a + b, 0);
+  // Each catch is a hotspot creature with chance h, otherwise a regular one; within a pool the
+  // creature is picked by weight. A pool with nothing unlocked hands its share to the other.
+  const pools = [
+    { pool: 'regular' as const, creatures: loc.creatures, chance: 1 - hotspotChance(inputs, loc) },
+    { pool: 'hotspot' as const, creatures: loc.hotspot?.creatures ?? [], chance: hotspotChance(inputs, loc) },
+  ].map((p) => {
+    const weights = p.creatures.map((c) => (lockReason(c, inputs) ? 0 : effectiveWeight(c, inputs, loc)));
+    return { ...p, weights, total: weights.reduce((a, b) => a + b, 0) };
+  });
+  const livePoolChance = pools.reduce((a, p) => a + (p.total > 0 ? p.chance : 0), 0);
   const missing = new Set<string>();
 
-  const creatures: CreatureResult[] = loc.creatures.map((c, i) => {
+  const entries = pools.flatMap((p) =>
+    p.creatures.map((c, i) => ({
+      c,
+      pool: p.pool,
+      weight: p.weights[i],
+      share: p.total > 0 && livePoolChance > 0 ? (p.chance / livePoolChance) * (p.weights[i] / p.total) : 0,
+    })),
+  );
+
+  const creatures: CreatureResult[] = entries.map(({ c, pool, weight, share }) => {
     const reason = lockReason(c, inputs);
-    const share = totalWeight > 0 ? weights[i] / totalWeight : 0;
     const perHour = scPerHour * share;
 
     const drops: DropResult[] = c.drops.map((d) => {
@@ -88,7 +115,9 @@ export function calculate(inputs: Inputs, loc: LocationData, prices: PriceData):
       const chance = mfApplies ? looted * (1 + mf) : looted;
       const avgCount = (d.min + d.max) / 2;
       const perKill = chance * avgCount;
-      const price = resolvePrice(d.item, prices, priceOpts);
+      const price = [d.item, ...(d.aliases ?? [])]
+        .map((id) => resolvePrice(id, prices, priceOpts))
+        .find((p) => p.source !== 'none') ?? resolvePrice(d.item, prices, priceOpts);
       if (price.source === 'none') missing.add(d.item);
       const dropsPerHour = perHour * chance;
       return {
@@ -112,10 +141,11 @@ export function calculate(inputs: Inputs, loc: LocationData, prices: PriceData):
       id: c.id,
       name: c.name,
       rarity: c.rarity,
+      pool,
       unlocked: !reason,
       lockReason: reason,
       baseWeight: c.weight,
-      effectiveWeight: weights[i],
+      effectiveWeight: weight,
       share,
       perHour,
       hoursPerSpawn: perHour > 0 ? 1 / perHour : Infinity,
@@ -129,6 +159,7 @@ export function calculate(inputs: Inputs, loc: LocationData, prices: PriceData):
   const coinsPerHour = creatures.reduce((a, c) => a + c.coinsPerHour, 0);
   return {
     seaCreaturesPerHour: scPerHour,
+    hotspotChance: hotspotChance(inputs, loc),
     coinsPerHour,
     xpPerHour: creatures.reduce((a, c) => a + c.xpPerHour, 0),
     coinsPerSeaCreature: scPerHour > 0 ? coinsPerHour / scPerHour : 0,

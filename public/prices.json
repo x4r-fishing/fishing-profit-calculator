@@ -57,6 +57,66 @@
   "SHARD_LORD_JAWBUS": {
    "instaSell": 2500000,
    "sellOffer": 3100000
+  },
+  "FRIED_FEATHER": {
+   "instaSell": 2500,
+   "sellOffer": 3500
+  },
+  "SEARED_ESCARGOT": {
+   "instaSell": 9000,
+   "sellOffer": 12000
+  },
+  "SULPHUR": {
+   "instaSell": 4,
+   "sellOffer": 6
+  },
+  "ENCHANTED_GLOWSTONE_DUST": {
+   "instaSell": 300,
+   "sellOffer": 400
+  },
+  "ENCHANTED_GUNPOWDER": {
+   "instaSell": 700,
+   "sellOffer": 900
+  },
+  "SINGED_POWDER": {
+   "instaSell": 20000,
+   "sellOffer": 30000
+  },
+  "ENCHANTED_GLOWSTONE": {
+   "instaSell": 60000,
+   "sellOffer": 70000
+  },
+  "ENCHANTMENT_FIRE_PROTECTION_6": {
+   "instaSell": 2000000,
+   "sellOffer": 2500000
+  },
+  "ENCHANTED_MAGMA_CREAM": {
+   "instaSell": 2000,
+   "sellOffer": 2600
+  },
+  "ENCHANTMENT_MAGMARIZER_6": {
+   "instaSell": 30000000,
+   "sellOffer": 35000000
+  },
+  "SCORCHED_CRAB_STICK": {
+   "instaSell": 150000,
+   "sellOffer": 200000
+  },
+  "SEVERED_PINCER": {
+   "instaSell": 3000000,
+   "sellOffer": 3500000
+  },
+  "CHAIN_END_TIMES": {
+   "instaSell": 8000000,
+   "sellOffer": 9000000
+  },
+  "BRIMSTONE_HANDLE": {
+   "instaSell": 15000000,
+   "sellOffer": 17000000
+  },
+  "BURNT_TEXTS": {
+   "instaSell": 20000000,
+   "sellOffer": 22000000
   }
  },
  "auction": {
@@ -99,6 +159,10 @@
   "TAURUS_HELMET": {
    "lowestBin": 220000,
    "count": 5
+  },
+  "SCUTTLER_SHELL": {
+   "lowestBin": 60000000,
+   "count": 3
   }
  },
  "npc": {

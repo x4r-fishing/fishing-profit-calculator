@@ -83,6 +83,27 @@ a { color: var(--magma); }
 .inputs .looting label.check { margin: 0; }
 .looting small { grid-column: 1 / -1; color: var(--ash-dim); font-size: 0.8rem; }
 select:disabled { opacity: 0.45; cursor: not-allowed; }
+option:disabled { color: var(--ash-dim); }
+.inputs .pct { color: var(--ash-dim); font-size: 0.85rem; margin-left: 4px; }
+#hotspot-fields { margin-top: 4px; }
+#hotspot-fields .note { display: block; color: var(--ash-dim); font-size: 0.8rem; margin-top: 4px; }
+
+/* bait comparison under the headline number */
+.compare { margin-top: 18px; max-width: 420px; }
+.compare-title { margin: 0 0 4px; color: var(--ash-dim); font-size: 0.85rem; }
+.compare ul { list-style: none; margin: 0; padding: 0; }
+.compare li {
+  display: flex; justify-content: space-between; gap: 16px; padding: 4px 8px;
+  border-left: 3px solid transparent; font-variant-numeric: tabular-nums;
+}
+.compare li.current { border-left-color: var(--magma); background: var(--blackstone); }
+.compare small { color: var(--ash-dim); }
+.compare .c-val { font-weight: 700; white-space: nowrap; }
+
+tr.group th {
+  padding: 18px 10px 6px; text-align: left; font: 500 0.95rem var(--display);
+  color: var(--ash-dim); border-bottom: 2px solid var(--seam);
+}
 
 input, select {
   font: inherit; color: var(--ash); background: var(--blackstone);

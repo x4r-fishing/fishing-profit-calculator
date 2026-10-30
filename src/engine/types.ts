@@ -16,13 +16,15 @@ export interface Drop {
    * Default true; false for drops that never double (Thunder Fragment, Magma Lord Fragment).
    */
   lootingExtra?: boolean;
+  /** Other item ids to try for the price (e.g. an enchantment's internal name). */
+  aliases?: string[];
 }
 
 export interface SeaCreature {
   id: string;
   name: string;
   rarity: Rarity;
-  /** Elusive mobs (Thunder, Lord Jawbus) are boosted by the Tracking stat. */
+  /** Elusive mobs (Thunder, Lord Jawbus, Fiery Scuttler, Ragnarok) are boosted by the Tracking stat. */
   elusive?: boolean;
   weight: number;
   requires: {
@@ -42,8 +44,19 @@ export interface LocationData {
   sources?: string[];
   /** Whale / Light / Dark bait multiply weights of creatures at or below this base weight. */
   baitBonus?: { maxBaseWeight: number; multiplier: number };
+  /** Id of another location whose creatures are added to this one's regular pool. */
+  extends?: string;
+  /** Regular sea creature pool. */
   creatures: SeaCreature[];
+  /**
+   * Hotspot-only pool. Each sea creature catch is a hotspot creature with
+   * chance baseChance + bonuses (Hotspot Tonic, Hook, Bait, Hermit Crab), otherwise a regular one.
+   */
+  hotspot?: { baseChance: number; creatures: SeaCreature[] };
 }
+
+/** Bait choice: none, Whale/Light/Dark (rare creature weight bonus) or Hotspot Bait. */
+export type Bait = 'none' | 'rare' | 'hotspot';
 
 export interface BazaarPrice {
   /** Instant-sell price per unit (highest buy order). */
@@ -82,8 +95,13 @@ export interface Inputs {
   tracking: number;
   fishingLevel: number;
   trophyTitle: number;
-  /** Whale / Light / Dark bait active. */
-  rareBait: boolean;
+  bait: Bait;
+  /** Hotspot Hook rod part (+20% hotspot sea creature chance). */
+  hotspotHook: boolean;
+  /** Hotspot Tonic mixin (+10%). */
+  hotspotTonic: boolean;
+  /** Mythic Hermit Crab pet, level 100 (Hotspot Hazard: +20%). */
+  hermitCrab: boolean;
   bazaarMode: BazaarMode;
   /** Apply Bazaar tax and Auction House fees. */
   applyTax: boolean;
@@ -130,11 +148,12 @@ export interface CreatureResult {
   id: string;
   name: string;
   rarity: Rarity;
+  pool: 'regular' | 'hotspot';
   unlocked: boolean;
   lockReason?: string;
   baseWeight: number;
   effectiveWeight: number;
-  /** Chance that a sea creature roll picks this creature. */
+  /** Chance that a sea creature catch is this creature. */
   share: number;
   perHour: number;
   hoursPerSpawn: number;
@@ -146,6 +165,8 @@ export interface CreatureResult {
 
 export interface CalcResult {
   seaCreaturesPerHour: number;
+  /** Chance that a sea creature catch is a hotspot creature (0 outside hotspots). */
+  hotspotChance: number;
   coinsPerHour: number;
   xpPerHour: number;
   coinsPerSeaCreature: number;

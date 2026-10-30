@@ -1,7 +1,7 @@
 import { gzipSync } from 'node:zlib';
 import { describe, expect, it } from 'vitest';
 import { skyblockIdFromItemBytes } from './nbt.mjs';
-import { loadLocations, validateLocation } from './validate-data.mjs';
+import { loadLocations, validateAll } from './validate-data.mjs';
 
 // Tiny NBT writer, just enough to build test fixtures shaped like auction item_bytes.
 function name(s) {
@@ -38,6 +38,6 @@ describe('auction item_bytes decoding', () => {
 
 describe('data files', () => {
   it('pass validation', () => {
-    expect(loadLocations().flatMap(validateLocation)).toEqual([]);
+    expect(validateAll(loadLocations())).toEqual([]);
   });
 });

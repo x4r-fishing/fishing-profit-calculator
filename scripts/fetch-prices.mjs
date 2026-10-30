@@ -4,7 +4,7 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { skyblockIdFromItemBytes } from './nbt.mjs';
-import { loadLocations } from './validate-data.mjs';
+import { itemIds, loadLocations } from './validate-data.mjs';
 
 const API = 'https://api.hypixel.net/v2';
 const out = process.argv[2] ?? new URL('../public/prices.json', import.meta.url).pathname;
@@ -38,9 +38,7 @@ async function mapLimit(items, limit, fn) {
   return results;
 }
 
-const wanted = new Set(
-  loadLocations().flatMap((l) => l.creatures.flatMap((c) => c.drops.map((d) => d.item))),
-);
+const wanted = itemIds(loadLocations());
 
 const [bazaarRes, itemsRes, firstPage] = await Promise.all([
   getJson(`${API}/skyblock/bazaar`),
@@ -94,8 +92,16 @@ for (const page of pages) {
   }
 }
 
-const missing = [...wanted].filter((id) => !bazaar[id] && !auction[id] && !npc[id]).sort();
-const unknown = [...wanted].filter((id) => !bazaar[id] && !knownItems.has(id)).sort();
+// A drop counts as priced if its id or any alias has a price; report it by its main id.
+const hasPrice = (id) => bazaar[id] || auction[id] || npc[id];
+const groups = loadLocations().flatMap((l) =>
+  [...(l.creatures ?? []), ...(l.hotspot?.creatures ?? [])].flatMap((c) =>
+    c.drops.map((d) => [d.item, ...(d.aliases ?? [])]),
+  ),
+);
+const missing = [...new Set(groups.filter((g) => !g.some(hasPrice)).map((g) => g[0]))].sort();
+const unknown = [...new Set(groups.filter((g) => !g.some((id) => bazaar[id] || knownItems.has(id))).map((g) => g[0]))].sort();
+const usedAliases = groups.filter((g) => !hasPrice(g[0]) && g.slice(1).some(hasPrice)).map((g) => `${g[0]} -> ${g.slice(1).find(hasPrice)}`);
 
 const result = {
   updated: new Date(bazaarRes.lastUpdated ?? Date.now()).toISOString(),
@@ -111,6 +117,7 @@ writeFileSync(out, JSON.stringify(result, null, 1));
 console.log(`Wrote ${out}`);
 console.log(`Bazaar: ${Object.keys(bazaar).length}, AH: ${Object.keys(auction).length} (scanned ${scanned} BINs on ${pages.length} pages), NPC: ${Object.keys(npc).length}`);
 if (missing.length) console.warn(`No price found for: ${missing.join(', ')}`);
+if (usedAliases.length) console.log(`Priced via alias: ${usedAliases.join(', ')}`);
 if (unknown.length) console.warn(`Not a known item id (check the spelling): ${unknown.join(', ')}`);
 
 function round(n) {
