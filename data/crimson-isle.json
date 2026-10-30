@@ -18,7 +18,8 @@
       "fishingXp": 1860,
       "drops": [
         { "item": "MAGMA_FISH", "min": 5, "max": 5, "chance": 1 },
-        { "item": "LUMP_OF_MAGMA", "min": 1, "max": 2, "chance": 1 },
+        { "item": "LUMP_OF_MAGMA", "min": 1, "max": 1, "chance": 1 },
+        { "item": "LUMP_OF_MAGMA", "note": "extra roll", "min": 1, "max": 1, "chance": 0.5 },
         { "item": "SLUG_BOOTS", "min": 1, "max": 1, "chance": 0.02 },
         { "item": "DYE_CARMINE", "min": 1, "max": 1, "chance": 2e-7 }
       ]
@@ -32,9 +33,10 @@
       "fishingXp": 2030,
       "drops": [
         { "item": "MAGMA_FISH", "min": 8, "max": 8, "chance": 1 },
-        { "item": "MOOGMA_PELT", "min": 1, "max": 2, "chance": 1 },
+        { "item": "MOOGMA_PELT", "min": 1, "max": 1, "chance": 1 },
+        { "item": "MOOGMA_PELT", "note": "extra roll", "min": 1, "max": 1, "chance": 0.5 },
         { "item": "MOOGMA_LEGGINGS", "min": 1, "max": 1, "chance": 0.02 },
-        { "item": "DYE_CARMINE", "min": 1, "max": 1, "chance": 4e-7 }
+        { "item": "DYE_CARMINE", "min": 1, "max": 1, "chance": 2e-7 }
       ]
     },
     {
@@ -58,7 +60,7 @@
       "rarity": "RARE",
       "weight": 400,
       "requires": { "fishingLevel": 31 },
-      "fishingXp": 1100,
+      "fishingXp": 2762,
       "drops": [
         { "item": "MAGMA_FISH", "min": 10, "max": 10, "chance": 1 },
         { "item": "PYROCLASTIC_SCALE", "min": 1, "max": 1, "chance": 1 },
@@ -86,7 +88,7 @@
       "rarity": "RARE",
       "weight": 280,
       "requires": { "fishingLevel": 34 },
-      "fishingXp": 2200,
+      "fishingXp": 3037,
       "drops": [
         { "item": "MAGMA_FISH", "min": 50, "max": 50, "chance": 1 },
         { "item": "ORB_OF_ENERGY", "min": 1, "max": 1, "chance": 1 },
@@ -100,7 +102,7 @@
       "rarity": "EPIC",
       "weight": 160,
       "requires": { "fishingLevel": 35 },
-      "fishingXp": 4300,
+      "fishingXp": 3930,
       "drops": [
         { "item": "MAGMA_FISH_SILVER", "min": 1, "max": 1, "chance": 1 },
         { "item": "HORN_OF_TAURUS", "min": 1, "max": 1, "chance": 1 },

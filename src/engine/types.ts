@@ -5,6 +5,8 @@ export interface Drop {
   item: string;
   /** Optional display name override (used when the item API has no name, e.g. books). */
   name?: string;
+  /** Short label shown next to the name, e.g. "extra roll" for a second loot table entry. */
+  note?: string;
   min: number;
   max: number;
   /** Base drop chance, 0..1. */
@@ -126,6 +128,7 @@ export interface ResolvedPrice {
 export interface DropResult {
   item: string;
   name: string;
+  note?: string;
   /**
    * Expected number of stacks per kill after Looting and Magic Find.
    * Above 1 means a chance of a second stack (e.g. 1.75 = one stack plus 75% for another).

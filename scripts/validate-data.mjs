@@ -25,6 +25,7 @@ export function validateLocation(loc) {
     if (!(c.requires?.fishingLevel >= 0)) err(`${where} missing requires.fishingLevel`);
     if (!(c.fishingXp >= 0)) err(`${where} missing fishingXp`);
     for (const d of c.drops ?? []) {
+      if (d.note !== undefined && typeof d.note !== 'string') err(`${where} ${d.item} note must be text`);
       if (!/^[A-Z0-9_:;]+$/.test(d.item)) err(`${where} drop has bad item id "${d.item}"`);
       if (!(d.chance > 0 && d.chance <= 1)) err(`${where} ${d.item} chance must be in (0, 1]`);
       if (!(d.min >= 1 && d.max >= d.min)) err(`${where} ${d.item} bad min/max`);

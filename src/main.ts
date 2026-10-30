@@ -248,7 +248,7 @@ function renderCreatures(r: CalcResult) {
       </tr>`;
     if (!isOpen) return main;
     const drops = c.drops
-      .map((d) => {
+      .map((d, di) => {
         const kept = d.price.source === 'excluded';
         const override = inputs.priceOverrides[d.item];
         return `
@@ -256,14 +256,14 @@ function renderCreatures(r: CalcResult) {
             <td>
               <label class="drop-name">
                 <input type="checkbox" data-sell="${d.item}" ${kept ? '' : 'checked'} aria-label="Sell ${esc(d.name)}" />
-                ${esc(d.name)}${d.avgCount === 1 ? '' : ` <span class="qty">×${Number.isInteger(d.avgCount) ? d.avgCount : count(d.avgCount)}</span>`}
+                ${esc(d.name)}${d.avgCount === 1 ? '' : ` <span class="qty">×${Number.isInteger(d.avgCount) ? d.avgCount : count(d.avgCount)}</span>`}${d.note ? ` <span class="qty">(${esc(d.note)})</span>` : ''}
               </label>
             </td>
             <td class="num">${d.chance > 1
               ? `<abbr class="over" title="1 stack plus ${+((d.chance - 1) * 100).toFixed(1)}% chance of a second">${chance(d.chance)}</abbr>`
               : chance(d.chance)}${boostMark(d)}</td>
             <td class="num">
-              <input class="price" type="text" inputmode="decimal" data-price="${d.item}" data-focus="price-${c.id}-${d.item}"
+              <input class="price" type="text" inputmode="decimal" data-price="${d.item}" data-focus="price-${c.id}-${di}"
                 value="${override !== undefined ? override : ''}" placeholder="${kept ? '—' : coins(d.price.unit)}"
                 aria-label="Price for ${esc(d.name)}" />
               <span class="src src-${d.price.source}">${SOURCE_LABEL[d.price.source]}</span>

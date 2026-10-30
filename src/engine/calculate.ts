@@ -123,6 +123,7 @@ export function calculate(inputs: Inputs, loc: LocationData, prices: PriceData):
       return {
         item: d.item,
         name: prices.names[d.item] ?? d.name ?? prettyId(d.item),
+        note: d.note,
         chance,
         lootingApplied: looting > 1 && (canExceed || d.chance < 1),
         magicFindApplied: mfApplies && mf > 0,

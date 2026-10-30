@@ -164,6 +164,16 @@ describe('drops and money', () => {
     expect(cloth(5).magicFindApplied).toBe(false);
   });
 
+  it('rolls Lump of Magma as 1 guaranteed plus 1 at 50% (wiki loot table)', () => {
+    const lumps = (inputs: Inputs) =>
+      byId(calculate(inputs, loc, emptyPrices), 'MAGMA_SLUG').drops
+        .filter((d) => d.item === 'LUMP_OF_MAGMA')
+        .reduce((a, d) => a + d.perKill, 0);
+    expect(lumps(baseInputs)).toBeCloseTo(1.5);
+    // Looting V: 175% on the first roll, 87.5% on the second.
+    expect(lumps({ ...baseInputs, lootingEnabled: true, lootingLevel: 5 })).toBeCloseTo(2.625);
+  });
+
   it('uses the average of min and max for drop counts', () => {
     const r = calculate(baseInputs, loc, emptyPrices);
     const silver = byId(r, 'LORD_JAWBUS').drops.find((d) => d.item === 'MAGMA_FISH_SILVER')!;
