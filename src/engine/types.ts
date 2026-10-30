@@ -13,7 +13,7 @@ export interface Drop {
   magicFind?: boolean;
   /**
    * Whether Looting can push this drop past 100% for a chance at a second stack.
-   * Default true; false for drops that never double (e.g. Magma Lord Fragment).
+   * Default true; false for drops that never double (Thunder Fragment, Magma Lord Fragment).
    */
   lootingExtra?: boolean;
 }

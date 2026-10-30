@@ -388,7 +388,7 @@ locSelect.addEventListener('change', () => {
 $('foot').innerHTML = `
   <p>Expected values: sea creatures per hour = catches × Sea Creature Chance × (1 + Double Hook Chance), split by spawn weight.
   Looting adds 15% per level to drop chances. Above 100% it's a chance at a second stack (Looting V on a
-  guaranteed drop: 75%), except Magma Lord Fragments, which never double. Then
+  guaranteed drop: 75%), except Thunder and Magma Lord Fragments, which always drop exactly one. Then
   Magic Find boosts drops that are still under 5%. Rare drops are averages — your luck will vary a lot over a few hours.</p>
   <p>Data: ${(location.sources ?? []).map((s) => (s.startsWith('http') ? `<a href="${esc(s)}">${esc(new URL(s).hostname)}</a>` : esc(s))).join(' and ')}.
   Prices from the Hypixel API. Not affiliated with Hypixel.</p>`;

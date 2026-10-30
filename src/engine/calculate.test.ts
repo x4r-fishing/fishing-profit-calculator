@@ -105,12 +105,16 @@ describe('drops and money', () => {
     expect(heart.magicFindApplied).toBe(false);
   });
 
-  it('never doubles Magma Lord Fragments', () => {
+  it('never doubles Thunder or Magma Lord Fragments, but does double their Silver Magmafish', () => {
     const r = calculate({ ...baseInputs, lootingEnabled: true, lootingLevel: 5 }, loc, emptyPrices);
-    const frag = byId(r, 'LORD_JAWBUS').drops.find((d) => d.item === 'MAGMA_LORD_FRAGMENT')!;
-    expect(frag.chance).toBe(1);
-    expect(frag.perKill).toBe(1);
-    expect(frag.lootingApplied).toBe(false);
+    for (const [mob, frag, silverAvg] of [['LORD_JAWBUS', 'MAGMA_LORD_FRAGMENT', 24], ['THUNDER', 'THUNDER_SHARDS', 12]] as const) {
+      const drops = byId(r, mob).drops;
+      const f = drops.find((d) => d.item === frag)!;
+      expect(f.chance).toBe(1);
+      expect(f.perKill).toBe(1);
+      expect(f.lootingApplied).toBe(false);
+      expect(drops.find((d) => d.item === 'MAGMA_FISH_SILVER')!.perKill).toBeCloseTo(silverAvg * 1.75);
+    }
   });
 
   it('boosts chance drops by 15% per Looting level, past 100% too', () => {
